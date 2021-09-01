@@ -10,42 +10,5 @@
 
 
 目录
-.
-├── com
-│   ├── panli
-│   │   └── www
-│   │       ├── service
-│   │       │   ├── xxx_Service.py
-│   │       └── testcase
-│   │           └── xxx_Testcase.py
-├── common
-│   ├── AssertTest.py
-│   ├── Basedate.py
-│   ├── DataContrast.py
-│   ├── DataProcess.py
-│   ├── DbHandle.py
-│   ├── HTMLTestRunner_PY3.py
-│   ├── TestRunner.py
-│   └── business
-│       ├── DataFactory.py
-│       ├── DataFactory_fulu.py
-│       ├── DataFactory_yg.py
-│       ├── OrderContrast.py
-│       └── get_token.py
-├── sql
-│   ├── mysql
-│   │   └── panli_order
-│   │       └── MySql_TableName.py
-│   └── sqlserver
-│       ├── panli
-│       │   └── Sql_TableName.py
-│       └── shoppingcart
-├── config
-│   ├── casepath_properties.ini
-│   ├── configDB.py
-│   ├── configEmail.py
-│   ├── configHttp.py
-│   └── testdata_properties.py
-├── Main.py
-├── requirements.txt
-└── result
+![image](https://user-images.githubusercontent.com/28703662/131655781-ed3ef665-e154-42c1-9cf5-f1b28847de57.png)
+
