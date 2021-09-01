@@ -35,18 +35,20 @@ class Run_http():
         print(basedata.get_nowtime(), ':', json.dumps(headers))
         print(basedata.get_nowtime(), ':', json.dumps(data))
         response = requests.post(url=url, json=data, headers=headers).json()
-        res = json.dumps(response, ensure_ascii=False, sort_keys=True)
-        print(basedata.get_nowtime(), ':', res)
-        return res
+        response['request'] = data
+        resandreq = json.dumps(response, ensure_ascii=False, sort_keys=True)
+        print(basedata.get_nowtime(), ':', resandreq)
+        return resandreq
 
     def get(self, url, data, headers):
         print(basedata.get_nowtime(), ':', url)
         print(basedata.get_nowtime(), ':', json.dumps(headers))
         print(basedata.get_nowtime(), ':', json.dumps(data))
         response = requests.get(url=url, params=data, headers=headers).json()
-        res = json.dumps(response, ensure_ascii=False, sort_keys=True)
-        print(basedata.get_nowtime(), ':', res)
-        return res
+        response['request'] = data
+        resandreq = json.dumps(response, ensure_ascii=False, sort_keys=True)
+        print(basedata.get_nowtime(), ':', resandreq)
+        return resandreq
 
     def run_http(self, method, url, data, headers):
         try:

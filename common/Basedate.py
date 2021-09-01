@@ -74,8 +74,9 @@ class Basedata():
             return False
 
 if __name__ == "__main__":
+    b = Basedata();
+    # strdate2 = '2021-04-30 10:49:51'
+    # strdate3 = '2021-04-30'
+    # print(strdate2[0:19])
 
-
-    strdate2 = '2021-04-30 10:49:51'
-    strdate3 = '2021-04-30'
-    print(strdate2[0:19])
+    print(b.get_nowtimev2())

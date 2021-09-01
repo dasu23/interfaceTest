@@ -12,6 +12,7 @@ class AssertTest(unittest.TestCase):
             return True
         except Exception as e:
             print(basedata.get_nowtime(),": verifyEqual期待结果不相等:【"+ str(exp)+ "】不等于【"+ str(act)+ "】...备注："+ str(msg))
+            # print(e)
             return False
 
     # 断言是否不相等

@@ -1,21 +1,23 @@
 #!/usr/bin/env python
 
 
+# engine = create_engine('mysql+pymysql://app_user:t9BBHdzEJqk2@rm-uf66mho6w264120j6.mysql.rds.aliyuncs.com:3306/')
+
 
 mysql={
-    'host':'rds.aliyuncs.com',
+    'host':'rm-uf66mho6w264120j6.mysql.rds.aliyuncs.com',
     'port':3306,
-    'user':'user',
-    'password':'password',
-    # 'database':'database',
+    'user':'app_user',
+    'password':'t9BBHdzEJqk2',
+    # 'database':'panli_order',
     'charset':'UTF8',
 }
 
 sqlserver={
-    'host':'rds.aliyuncs.com'',
+    'host':'10.17.164.113',
     'port':3433,
-    'user':'user',
-    'password':'password',
+    'user':'sit_rds_root',
+    'password':'FRbkGkAA1F&6',
     'charset':'UTF8',
 }
 

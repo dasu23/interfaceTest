@@ -5,20 +5,29 @@ from com.panli.op.service.Finance_SendCoupon_Service import FinanceSendCoupon_Se
 from com.panli.op.service.Purchase_UpdateOrderStatus_Service import PurchaseUpdateOrderStatus_Service
 from com.panli.op.service.Purchase_UpdateReceiver_Service import PurchaseUpdateReceiver_Service
 from com.panli.op.service.Quality_SelfbuyReceivedUpdate_Service import QualitySelfbuyReceivedUpdate_Service
+from com.panli.op.service.Risk_UpdateUserVentureStatus_Service import Risk_UpdateUserVentureStatus_Service
 from com.panli.op.service.Warehouse_Register_Service import WarehouseRegister_Service
 from com.panli.op.service.Warehouse_Registerlocation_Service import WarehouseRegisterlocation_Service
+from com.panli.op.service.Warehouse_ship_BatchChangeStatus_Service import Warehouse_ship_BatchChangeStatus_Service
+from com.panli.op.service.Warehouse_ship_Update_Service import Warehouse_ship_Update_Service
+from com.panli.www.service.Coupon_GetFreightList_Service import Coupon_GetFreightList_Service
 from com.panli.www.service.Coupon_GetList_Service import CouponGetList_Service
+from com.panli.www.service.Logistics_GetWaybillDeliveryList_Service import Logistics_GetWaybillDeliveryList_Service
+from com.panli.www.service.My_ConfirmReceipt_Service import My_ConfirmReceipt_Service
+from com.panli.www.service.My_GetAddressList_Service import My_GetAddressList_Service
 from com.panli.www.service.Order_GenerateOrderAndPay_Service import OrderGenerateOrderAndPay_Service
 from com.panli.www.service.Order_GeneratePreOrderId_Service import OrderGeneratePreOrderId_Service
 from com.panli.www.service.Order_GetList_Service import OrderGetList_Service
+from com.panli.www.service.Order_PayWaybill_Service import Order_PayWaybill_Service
 from com.panli.www.service.Order_PreorderModeify_Service import OrderPreorderModeify_Service
 from com.panli.www.service.Pitem_GetProduct_Service import PitemGetProduct_Service
 from com.panli.www.service.Shoppingcart_AddtoCart_Service import ShoppingcartAddtoCart_Service
 from com.panli.www.service.Shoppingcart_GetList_Service import ShoppingcartGetList_Service
+from common.business.OrderContrast import OrderContrast
 from config.testdata_properties import *
-from common.get_token import *
+from common.business.get_token import *
 
-
+orderContrast = OrderContrast();
 
 class DataFactory():
 
@@ -56,12 +65,11 @@ class DataFactory():
         couponinfo = CouponGetList_Service().getCouponNeedPayAmount(cartinfo['totalAmount']);
 
         # 生成预支付订单
-        responseOPM = OrderPreorderModeify_Service().preorderModeify(preOrderId, couponinfo['couponCode'],
-                                                           couponinfo['payAmount']);
+        responseOPM = OrderPreorderModeify_Service().preorderModeify(preOrderId, couponinfo['couponCode'], couponinfo['payAmount']);
 
         # 支付并生成正式订单
-        responseOGO = OrderGenerateOrderAndPay_Service().generateOrderAndPay(preOrderId, couponinfo['couponCode'],
-                                                                   www_paypassword);
+        responseOGO = OrderGenerateOrderAndPay_Service().generateOrderAndPay(preOrderId, couponinfo['couponCode'], www_paypassword);
+
 
 
     ########### 代购订单入库 ###########
@@ -115,17 +123,63 @@ class DataFactory():
         get_tokenV3("www")
         productid = OrderGetList_Service().getFirstProductId(-1);
         print(productid)
+        # 下单后校验订单数据库
+        orderContrast.checkmysqlOrder(productid);
 
         # 敏感品类型
         forbiddenInfo = [2, 3]
         # 代购商品自动入库
         self.purchaseOrderWarehousing(productid,forbiddenInfo)
+        # 入库后校验订单数据库
+        orderContrast.checkmysqlOrder(productid);
 
         return productid
 
 
 
 
+    # 生成运单
+    def generateBillOrder(self, productid):
+
+        # ---------------- 生成后台token(发运费券) ----------------
+        get_tokenV3("op");
+        FinanceSendCoupon_Service().sendCoupon([www_username], bill_CouponCode)
+
+
+        # ---------------- 生成前台token(创建运单)----------------
+        get_tokenV3("www");
+        addressId = My_GetAddressList_Service().returnAmericanAddress()
+
+        billTotalAmount,billSolutionId = Logistics_GetWaybillDeliveryList_Service().getWaybillDeliveryList(addressId, productid)
+
+        userBillCouponCode = Coupon_GetFreightList_Service().getUserBillCouponCode(billTotalAmount)
+
+        billId = Order_PayWaybill_Service().payWaybill(billSolutionId, userBillCouponCode, www_paypassword)
+
+
+        # ---------------- 生成后台token(仓管发货) ----------------
+        get_tokenV3("op");
+        # 审核通过用户，防止用户被风控无法建运单
+        Risk_UpdateUserVentureStatus_Service().updateUserVentureStatus(www_username)
+
+        batchChangeStatus = Warehouse_ship_BatchChangeStatus_Service();
+        # 设置运单为处理中
+        batchChangeStatus.batchChangeStatus(11, [billId])
+        # 设置运单为已接单
+        batchChangeStatus.batchChangeStatus(1, [billId])
+
+        ship_Update = Warehouse_ship_Update_Service();
+        # 设置运单为发货中
+        ship_Update.shipUpdate(billId, 2, 1000)
+        # 设置运单为已发货
+        ship_Update.shipUpdate(billId, 3, 1000)
+
+
+        # ---------------- 生成前台token(用户确认收货) ----------------
+        get_tokenV3("www");
+        My_ConfirmReceipt_Service().confirmReceipt(billId)
+
+        return billId
 
 
 
@@ -133,8 +187,13 @@ class DataFactory():
 
 if __name__ == '__main__':
 
-    # # 新建订单
-    DataFactory().createPurchaseOrder();
+    dataFactory = DataFactory();
+    # # 新建订单˙
+    productid = dataFactory.createPurchaseOrder();
+
+    billId = dataFactory.generateBillOrder(productid);
 
 
 
+
+    # dataFactory.generatePurchaseOrder()

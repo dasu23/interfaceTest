@@ -1,3 +1,5 @@
+import decimal
+
 import json_tools
 import logging
 from common.AssertTest import AssertTest
@@ -88,15 +90,33 @@ class DataContrast():
         try:
             # 根据对比路径进行对比断言
             for k, v in pythonPathDict.items():
+                # str拼装转换表达式，转换为expectedJson['info']['Uid']
                 expected = eval('expectedJson' + k);
                 actual = eval('actualJson' + v);
                 msg = "对比错误，期待结果key：" + str(k) + "，实际结果key：" + str(v)
-                # 判断是否是时间，转为19位长度str格式进行比较
-                if basedate.isVaildDate(expected) or basedate.isVaildDate(actual):
-                    result = assertTest.verifyEqual(str(expected)[0:19], str(actual)[0:19], msg)
-                    # 如果断言结果为失败，则打便签结果为失败
+
+                # 判断期待结果或实际结果是否为空
+                # 过滤不同类型的空导致的误报错
+                if dataProcess.isempty(expected) and dataProcess.isempty(actual):
+                    pass
+
+                # 判断期待结果或实际结果是否为时间格式，
+                # 转为19位长度str格式进行比较
+                elif basedate.isVaildDate(expected) or basedate.isVaildDate(actual):
+                    result = assertTest.verifyEqual(str(expected)[0:16], str(actual)[0:16], msg)
+                    # 如果断言结果为失败，则打标签结果为失败
                     if result == False:
                         assFlag = False
+
+                # 判断期待结果或实际结果类型是否相等（去除decimal类型）
+                # 如果不相等则都转换为str类型之后在进行对比
+                elif type(expected) != type(actual) \
+                        and type(expected) is not decimal.Decimal \
+                        and type(actual) is not decimal.Decimal:
+                    result = AssertTest().verifyEqual(dataProcess.change2str(expected), dataProcess.change2str(actual), msg)
+                    if result == False:
+                        assFlag = False
+
                 else:
                     result = assertTest.verifyEqual(expected, actual, msg)
                     if result == False:
@@ -129,6 +149,27 @@ class DataContrast():
 
 
 
+    # ------------------------------------ 对比2组数据 ------------------------------------
+    # 以期待结果为标准进行对比
+    # 期待结果有，实际结果中没有路径报错；反之不报错
+    # （只支持单层结构json，不支持多层结构json）
+    def contrastbyexpected(self, expected, actual):
+
+        pathjson = dataProcess.composepathjson(expected);
+        return self.contrastByJsonPath(pathjson,expected, actual)
+
+    # 以实际结果为标准进行对比
+    def contrastbyactual(self, expected, actual):
+
+        pathjson = dataProcess.composepathjson(actual);
+        return self.contrastByJsonPath(pathjson,expected, actual)
+
+
+
+
+
+
+
 if __name__ == '__main__':
 
     dataContrast = DataContrast();
@@ -151,6 +192,5 @@ if __name__ == '__main__':
     # dataContrast.contrastByPythonPath(pythonPathdict, dict1, dict2)
 
 
-    dataContrast.contrastByJsonPath(jsonPathdict, dict1, dict2)
-
+    dataContrast.contrastbyexpected(dict1, dict2)
 

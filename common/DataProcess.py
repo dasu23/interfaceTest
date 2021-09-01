@@ -1,4 +1,5 @@
 import re
+import uuid
 
 
 class DataProcess():
@@ -78,6 +79,62 @@ class DataProcess():
             if instr.count(s):
                 flag = True
         return flag
+
+
+    # 获取json的key，组合kv都为一样的pathjson
+    def composepathjson(self,json):
+        pathjson = {}
+
+        for k, v in json.items():
+            pathjson[k] = k
+
+        return pathjson
+
+    # 如果参数是bytes，则转换为int
+    def changebyte2int(self, param):
+        if type(param) is bytes:
+            param = int.from_bytes(param,'little')
+        return param
+
+
+    #转换类型为str
+    def change2str(self, param):
+        if type(param) is bytes:
+            param = int.from_bytes(param,'little')
+            param = str(param)
+        elif type(param) is int or type(param) is uuid.UUID:
+            param = str(param)
+        return param
+
+
+    # 判断参数是否为空
+    def isempty(self, param):
+        if param is None:
+            return True
+        elif type(param) is str:
+            param = param.strip()
+            if ''==param or 'Null'==param or 'NULL'==param or 'null'==param:
+                return True
+            else:
+                return False
+        elif type(param) is dict or type(param) is list or type(param) is tuple:
+            if len(param) == 0 :
+                return True
+            else:
+                return False
+        # 如果参数为0，也判定为null
+        elif type(param) is int:
+            if param == 0 :
+                return True
+            else:
+                return False
+        elif type(param) is bytes:
+            if self.changebyte2int(param) == 0 :
+                return True
+            else:
+                return False
+        else:
+            return False
 
 
 
