@@ -13,3 +13,10 @@
 
 ![image](https://user-images.githubusercontent.com/28703662/131655781-ed3ef665-e154-42c1-9cf5-f1b28847de57.png)
 
+
+├─sql  项目SQL语句
+│
+│─com  项目引用jar包
+│
+├─common 公共模块
+
