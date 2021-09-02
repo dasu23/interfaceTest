@@ -33,9 +33,6 @@
 │   ├── TestRunner.py           #测试用例执行入口
 │   └── business                #业务相关
 │       ├── DataFactory.py
-│       ├── DataFactory_fulu.py
-│       ├── DataFactory_yg.py
-│       ├── OrderContrast.py
 │       └── get_token.py
 ├── sql                     #数据库连接
 │   ├── mysql
