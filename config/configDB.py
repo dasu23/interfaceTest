@@ -8,7 +8,7 @@ mysql={
     'host':'rm-uf66mho6w264120j6.mysql.rds.aliyuncs.com',
     'port':3306,
     'user':'app_user',
-    'password':'t9BBHdzEJqk2',
+    'password':'**',
     # 'database':'panli_order',
     'charset':'UTF8',
 }
@@ -17,7 +17,7 @@ sqlserver={
     'host':'10.17.164.113',
     'port':3433,
     'user':'sit_rds_root',
-    'password':'FRbkGkAA1F&6',
+    'password':'**',
     'charset':'UTF8',
 }
 
