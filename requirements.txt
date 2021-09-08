@@ -7,3 +7,4 @@ xlrd==2.0.1
 BeautifulReport==0.1.3
 HTMLTestRunner==0.8.0
 pymssql==2.2.2
+ParamUnittest==0.2
