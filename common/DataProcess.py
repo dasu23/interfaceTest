@@ -1,3 +1,4 @@
+import decimal
 import re
 import uuid
 
@@ -101,10 +102,10 @@ class DataProcess():
     def change2str(self, param):
         if type(param) is bytes:
             param = int.from_bytes(param,'little')
-            param = str(param)
-        elif type(param) is int or type(param) is uuid.UUID:
-            param = str(param)
-        return param
+            # param = str(param)
+        # elif type(param) is int or type(param) is uuid.UUID:
+        #     param = str(param)
+        return str(param)
 
 
     # 判断参数是否为空
@@ -137,4 +138,16 @@ class DataProcess():
             return False
 
 
+    # 将python格式的json 转换为 普通json
+    def replacejson(self, json):
+        strjson = str(json).replace("true", "True").replace("false", "False").replace("null", "None").replace("'", "\"").replace(" ", "")
+        return strjson
 
+
+    # 去除decimal末尾无用小数
+    def remove_exponent(self,decimalnum):
+        if type(decimalnum) is decimal.Decimal:
+            return decimalnum.to_integral() if decimalnum == decimalnum.to_integral() else decimalnum.normalize()
+        else:
+            # decimalnum = float(decimalnum)
+            return decimalnum

@@ -24,6 +24,7 @@ from com.panli.www.service.Pitem_GetProduct_Service import PitemGetProduct_Servi
 from com.panli.www.service.Shoppingcart_AddtoCart_Service import ShoppingcartAddtoCart_Service
 from com.panli.www.service.Shoppingcart_GetList_Service import ShoppingcartGetList_Service
 from common.business.OrderContrast import OrderContrast
+from common.business.ShipContrast import ShipContrast
 from config.testdata_properties import *
 from common.business.get_token import *
 
@@ -73,7 +74,6 @@ class DataFactory():
 
 
     ########### 代购订单入库 ###########
-    #
     def purchaseOrderWarehousing(self,productid,forbiddenInfo):
         """
         # 代购订单入库
@@ -109,7 +109,7 @@ class DataFactory():
 
 
 
-    ########### 从下单到入库完成流程 ###########
+    ###########----- 从下单到入库完成流程（有断言） ------###########
     # 默认敏感品食品药品，重抛
     def createPurchaseOrder(self):
         """
@@ -138,7 +138,7 @@ class DataFactory():
 
 
 
-    # 生成运单
+    ########### 生成运单 ###########
     def generateBillOrder(self, productid):
 
         # ---------------- 生成后台token(发运费券) ----------------
@@ -148,14 +148,16 @@ class DataFactory():
 
         # ---------------- 生成前台token(创建运单)----------------
         get_tokenV3("www");
-        addressId = My_GetAddressList_Service().returnAmericanAddress()
+        addressId,addressInfo = My_GetAddressList_Service().returnAmericanAddress()
 
-        billTotalAmount,billSolutionId = Logistics_GetWaybillDeliveryList_Service().getWaybillDeliveryList(addressId, productid)
+        billTotalAmount,billSolutionId,deliveryList = Logistics_GetWaybillDeliveryList_Service().getWaybillDeliveryList(addressId, productid)
 
-        userBillCouponCode = Coupon_GetFreightList_Service().getUserBillCouponCode(billTotalAmount)
+        userBillCouponCode,couponinfo = Coupon_GetFreightList_Service().getUserBillCouponCode(billTotalAmount)
 
-        billId = Order_PayWaybill_Service().payWaybill(billSolutionId, userBillCouponCode, www_paypassword)
+        billId,billinfo = Order_PayWaybill_Service().payWaybill(billSolutionId, userBillCouponCode, www_paypassword)
 
+        # 断言
+        ShipContrast().checkshipinfo(addressInfo, billinfo, couponinfo, deliveryList);
 
         # ---------------- 生成后台token(仓管发货) ----------------
         get_tokenV3("op");

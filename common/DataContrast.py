@@ -101,22 +101,23 @@ class DataContrast():
                     pass
 
                 # 判断期待结果或实际结果是否为时间格式，
-                # 转为19位长度str格式进行比较
+                # 转为16位长度str格式进行比较
                 elif basedate.isVaildDate(expected) or basedate.isVaildDate(actual):
                     result = assertTest.verifyEqual(str(expected)[0:16], str(actual)[0:16], msg)
                     # 如果断言结果为失败，则打标签结果为失败
                     if result == False:
                         assFlag = False
 
-                # 判断期待结果或实际结果类型是否相等（去除decimal类型）
-                # 如果不相等则都转换为str类型之后在进行对比
-                elif type(expected) != type(actual) \
-                        and type(expected) is not decimal.Decimal \
-                        and type(actual) is not decimal.Decimal:
+                # 判断期待结果或实际结果类型是否相等
+                elif type(expected) != type(actual):
+                    # 判断是否为decimal类型
+                    if type(expected) is decimal.Decimal or type(actual) is decimal.Decimal:
+                        expected = dataProcess.remove_exponent(expected)
+                        actual = dataProcess.remove_exponent(actual)
+                    # 如果不相等则都转换为str类型之后在进行对比
                     result = AssertTest().verifyEqual(dataProcess.change2str(expected), dataProcess.change2str(actual), msg)
                     if result == False:
                         assFlag = False
-
                 else:
                     result = assertTest.verifyEqual(expected, actual, msg)
                     if result == False:
