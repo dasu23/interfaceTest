@@ -10,6 +10,7 @@
 
 
 **框架特点** 
+
 1.批量断言（DataContrast.py）
   - 支持判断不同类型的空值，比如'',' ',null,NULL,None，int 0，byte 0 ，只有当期待值与实际值都为空是才会断言为True
   - 支持不同数据类型之间的断言，比如decimal与int，string和uuid
