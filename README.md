@@ -21,7 +21,8 @@
     actual = {"id": "503", "name222": "A班级优化1", "info": {"uid": "2017", "stuName": ["张三", "赵五"]}}
     #设定对比路径
     Pathdict = {"info.Uid": "name222", "info.stuName": "info.stuName2"}
-    DataContrast().contrast(pythonPathdict, expected, actual)
+    #以预设路径Pathdict为模板进行对比
+    DataContrast().contrast(Pathdict, expected, actual)
     #以期待结果为路径模板进行对比
     DataContrast().contrastByExpected(expected, actual)
     #以实际结果为路径模板进行对比
