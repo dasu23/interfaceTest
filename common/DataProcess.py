@@ -1,6 +1,6 @@
 import decimal
 import re
-import uuid
+
 
 
 class DataProcess():
@@ -9,7 +9,7 @@ class DataProcess():
     # ------------------------------------ 数据处理 ------------------------------------
     # 转换路径
     # 转换为python可识别的json路径
-    # 将【Data.Shoppingcarts.Sellers[0].Products[0].LinkUrl】转换为【['Shoppingcarts']['Sellers'][0]['Products'][0]['Title']】
+    # 将【Data.Shoppingcarts.Sellers[0].Products[0].LinkUrl】转换为【['Data']['Shoppingcarts']['Sellers'][0]['Products'][0]['LinkUrl']】
     def replacepath(self, path):
         bb = re.split('[.[\]]', path)
         finalpath = ''
@@ -26,6 +26,7 @@ class DataProcess():
                 finalpath = finalpath + dd;
         return finalpath;
 
+
     # 转换json路径
     # {"info.Uid": "name222", "info.stuName": "info.stuName2"}
     # 将上面的路径转换为如下路径
@@ -39,6 +40,7 @@ class DataProcess():
             pythonPathDict[k] = v
 
         return pythonPathDict;
+
 
 
     # 将json中的key全部转为小写
@@ -70,14 +72,14 @@ class DataProcess():
 
 
 
-    # 判断instr是否存在于allstr中
+    # 判断strparam是否存在于allstr中
     # time_letter = [":", "."]
     # if self.hasinstr(time_letter, date):
     #     print(date)
-    def hasinstr(self,instr, allstr):
+    def hasinstr(self, strparam, allstr):
         flag = False;
         for s in str(allstr):
-            if instr.count(s):
+            if strparam.count(s):
                 flag = True
         return flag
 
@@ -85,10 +87,8 @@ class DataProcess():
     # 获取json的key，组合kv都为一样的pathjson
     def composepathjson(self,json):
         pathjson = {}
-
         for k, v in json.items():
             pathjson[k] = k
-
         return pathjson
 
     # 如果参数是bytes，则转换为int
@@ -102,9 +102,6 @@ class DataProcess():
     def change2str(self, param):
         if type(param) is bytes:
             param = int.from_bytes(param,'little')
-            # param = str(param)
-        # elif type(param) is int or type(param) is uuid.UUID:
-        #     param = str(param)
         return str(param)
 
 
@@ -149,5 +146,17 @@ class DataProcess():
         if type(decimalnum) is decimal.Decimal:
             return decimalnum.to_integral() if decimalnum == decimalnum.to_integral() else decimalnum.normalize()
         else:
-            # decimalnum = float(decimalnum)
             return decimalnum
+
+
+
+
+if __name__ == '__main__':
+    dataProcess = DataProcess()
+    # aa = dataProcess.replacepath("Data.Shoppingcarts.Sellers[0].Products[0].LinkUrl")
+    # print(aa)
+
+
+
+    time_letter = [":", "."]
+    print(dataProcess.hasinstr(time_letter, "2021-09-09 18:02:41.123"))

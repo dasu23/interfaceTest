@@ -60,6 +60,7 @@ class Basedata():
         return strTime
 
     # 判断字符串是否是时间
+    # 如果不是时间则报错返回False
     def isVaildDate(self, date):
         try:
             if ":" in str(date):
@@ -75,8 +76,8 @@ class Basedata():
 
 if __name__ == "__main__":
     b = Basedata();
-    # strdate2 = '2021-04-30 10:49:51'
+    strdate2 = '123'
     # strdate3 = '2021-04-30'
     # print(strdate2[0:19])
 
-    print(b.get_nowtimev2())
+    print(b.isVaildDate(strdate2))

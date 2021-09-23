@@ -1,6 +1,7 @@
 import pymssql
 import pymysql
-from config.configDB import mysql, sqlserver
+from config.configDB import *
+from config.configEnv import ConfigEnv
 
 
 class DbHandle():
@@ -8,22 +9,32 @@ class DbHandle():
     def connectdb(self, database):
         try:
 
+            configEnv = ConfigEnv()
+            env = configEnv.getEnv()
+
+            if env == 'sit' or env == 'Sit' or env == 'SIT':
+                mysqlhost = mysql
+                sqlserverhost = sqlserver
+            else:
+                mysqlhost = mysql_pro
+                sqlserverhost = sqlserver_pro
+
             if database == 'mysql':
-                self.conn = pymysql.connect(host=mysql['host'],
-                                            port=mysql['port'],
-                                            user=mysql['user'],
-                                            password=mysql['password'],
-                                            # database=dmysqlf['database'],
-                                            charset=mysql['charset'])
+                self.conn = pymysql.connect(host=mysqlhost['host'],
+                                            port=mysqlhost['port'],
+                                            user=mysqlhost['user'],
+                                            password=mysqlhost['password'],
+                                            # database=mysqlhost['database'],
+                                            charset=mysqlhost['charset'])
                 self.cur = self.conn.cursor(cursor=pymysql.cursors.DictCursor)
 
             elif database == 'sqlserver':
-                self.conn = pymssql.connect(host=sqlserver['host'],
-                                            port=sqlserver['port'],
-                                            user=sqlserver['user'],
-                                            password=sqlserver['password'],
-                                            # database=sqlserver['database'],
-                                            charset=sqlserver['charset'])
+                self.conn = pymssql.connect(host=sqlserverhost['host'],
+                                            port=sqlserverhost['port'],
+                                            user=sqlserverhost['user'],
+                                            password=sqlserverhost['password'],
+                                            # database=sqlserverhost['database'],
+                                            charset=sqlserverhost['charset'])
                 self.cur = self.conn.cursor(as_dict=True)
         except:
             print("连接数据库失败")
@@ -34,16 +45,20 @@ class DbHandle():
             self.cur.close()
             self.conn.close()
 
-    def dbQuery(self,database,sql, *args):
-        sql = sql.format(*args)
-        self.connectdb(database)
-        link_list = []
-        self.cur.execute(sql)
-        data = self.cur.fetchall()
-        return data
-
-    def dbInsert(self, database, sql):
+    def dbQuery(self, database, sql, *args):
         try:
+            sql = sql.format(*args)
+            self.connectdb(database)
+            self.cur.execute(sql)
+            data = self.cur.fetchall()
+            return data
+        except Exception as e:
+            print(e)
+            print('查询失败！！！')
+
+    def dbInsert(self, database, sql, *args):
+        try:
+            sql = sql.format(*args)
             self.connectdb(database)
             self.cur.execute(sql)
             print("插入成功！！！")
@@ -52,15 +67,19 @@ class DbHandle():
             print(e)
             print('插入失败！！！')
 
-    def dbUpdate(self, database, sql):
+    def dbUpdate(self, database, sql, *args):
         try:
+            sql = sql.format(*args)
             self.connectdb(database)
             self.cur.execute(sql)
-            print("更新状态成功！！！")
+            print("更新sql成功！！！")
             self.conn.commit()
         except Exception as e:
             print(e)
-            print('更新状态失败！！！')
+            print('更新sql失败！！！')
+
+
+
 
 if __name__ == '__main__':
 

@@ -4,6 +4,7 @@ import HTMLTestRunner
 import unittest
 import time, os
 
+from config.configEnv import ConfigEnv
 from config.configHttp import basedata
 from testFile.runAll import file
 from BeautifulReport import BeautifulReport as bf
@@ -33,8 +34,11 @@ class TestRunner(object):
 
     # 运行测试用例，生成BeautifulReport
     def bfrun(self, testCaseClass):
+
+        rootpath = ConfigEnv().getrootpath()
+
         # 报告路径
-        reportpath = sys.path[2] + '/result'
+        reportpath = rootpath + '/result'
         reportname = sys.argv[0].replace(str(sys.path[0]),'').replace('/','').replace('.py','') + '_Result'
         filename = str(basedata.get_nowtimev2()) + '_' + reportname
 
