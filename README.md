@@ -11,7 +11,7 @@
 
 **框架特点** 
 
-1.批量断言（DataContrast.py）
+1.批量断言（AssertTest.py）
   - 支持判断不同类型的空值，比如'',' ',null,NULL,None，int 0，byte 0 ，只有当期待值与实际值都为空是才会断言为True
   - 支持不同数据类型之间的断言，比如decimal与int，string和uuid
   - 时间的断言只精确到分钟，防止接口秒级误差的误报
@@ -23,11 +23,11 @@
     #设定对比路径
     Pathdict = {"info.Uid": "name222", "info.stuName": "info.stuName2"}
     #以预设路径Pathdict为模板进行对比
-    DataContrast().contrast(Pathdict, expected, actual)
+    AssertTest().contrast(Pathdict, expected, actual)
     #以期待结果为路径模板进行对比
-    DataContrast().contrastByExpected(expected, actual)
+    AssertTest().contrastByExpected(expected, actual)
     #以实际结果为路径模板进行对比
-    DataContrast().contrastByActual(expected, actual)
+    AssertTest().contrastByActual(expected, actual)
     ```
 
 
